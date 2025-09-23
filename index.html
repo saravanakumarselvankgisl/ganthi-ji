@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gandhi Jayanti Social Card Maker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Fun Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&family=Fredoka+One&family=Luckiest+Guy&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Baloo 2', 'Fredoka One', 'Segoe UI', sans-serif;
+      background: #f7f8fa;
+    }
+    .main {
+      max-width: 370px;
+      margin: 36px auto;
+      background: #fff;
+      border-radius: 22px;
+      box-shadow: 0 6px 28px #e3eaef;
+      padding: 18px 12px 22px 12px;
+      text-align: center;
+    }
+    h1 {
+      color: #138808;
+      font-size: 1.45rem;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+      text-shadow: 0 4px 10px #ffd;
+    }
+    .step {
+      font-size: 1.13rem;
+      color: #0b3301;
+      margin: 18px 0 5px 0;
+    }
+    .bg-choice-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin: 12px 0;
+    }
+    .bg-btn {
+      border: none;
+      outline: none;
+      border-radius: 16px;
+      font-size: 1rem;
+      padding: 6px 12px;
+      cursor: pointer;
+      box-shadow: 0 1px 6px #eee;
+      font-family: inherit;
+      font-weight: 600;
+      margin-bottom: 2px;
+      transition: 0.2s;
+    }
+    .bg0 {
+      background: linear-gradient(135deg, #fffde4 45%, #138808 100%);
+      color: #222;
+    }
+    .bg1 {
+      background: linear-gradient(135deg, #15141d 0%, #4c4748 60%, #fff 120%);
+      color: #fff;
+    }
+    .bg2 {
+      background: linear-gradient(120deg, #ed6ea0, #f8e3ae 100%);
+      color: #810a3a;
+    }
+    .bg3 {
+      background: linear-gradient(135deg, #f6d365 0, #fda085 100%);
+    }
+    .bg-choice-row .active {
+      border: 3px solid #138808;
+    }
+    button.big {
+      width: 94%;
+      margin: 8px 0;
+      padding: 15px 6px;
+      font-size: 1.15rem;
+      background: #138808;
+      color: #fff;
+      border-radius: 12px;
+      font-weight: 700;
+      border: none;
+      box-shadow: 0 2px 10px #c1edbc;
+    }
+    button.big:hover {
+      background: #44c231;
+    }
+    #photoPreview {
+      width: 74px;
+      height: 74px;
+      border-radius: 15px;
+      box-shadow: 0 2px 9px #bbe9b1;
+      object-fit: cover;
+      display: none;
+      margin: 8px auto;
+    }
+    .hidden {
+      display: none;
+    }
+    #msg {
+      color: #138808;
+      font-size: 0.97rem;
+      margin: 8px 0;
+    }
+    @media (max-width: 430px) {
+      .main {
+        max-width: 99vw;
+        padding: 7vw 2vw;
+      }
+      h1 {
+        font-size: 1.04rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="main">
+    <h1>🇮🇳 Gandhi Jayanti Card Maker</h1>
+
+    <div class="step">1. Choose Background</div>
+    <div class="bg-choice-row" id="bgChoices">
+      <button onclick="setStyle(0)" class="bg-btn bg0 active">Tricolor</button>
+      <button onclick="setStyle(1)" class="bg-btn bg1">Chalkboard</button>
+      <button onclick="setStyle(2)" class="bg-btn bg2">Rainbow</button>
+      <button onclick="setStyle(3)" class="bg-btn bg3">Sparkle</button>
+    </div>
+
+    <div class="step">2. Pick a Gandhi Quote</div>
+    <button class="big" onclick="chooseQuote()">🎲 Show Gandhi Quote</button>
+    <div
+      id="quoteDisplay"
+      style="margin: 8px auto 10px auto; font-size: 1.14rem; color: #2d2d2d; font-family: 'Fredoka One', cursive; min-height: 36px"
+    ></div>
+
+    <div class="step">3. Add Your Photo (Optional)</div>
+    <button class="big" onclick="uploadPhoto()">Upload Photo</button>
+    <button class="big" onclick="takePhoto()">Take Photo</button>
+    <img id="photoPreview" src="" alt="Preview" />
+
+    <div id="previewArea" style="margin-top: 20px"></div>
+    <button class="big hidden" id="downloadBtn" onclick="downloadCard()">⬇️ Download & Share PNG</button>
+    <div id="msg"></div>
+  </div>
+  <footer style="text-align: center; font-size: 1.02rem; color: #444; margin: 22px 0 12px 0">
+    For students • Gandhi Jayanti 2025 • MGC
+  </footer>
+  <canvas id="canvasExport" width="1080" height="1080" class="hidden"></canvas>
+  <script>
+    const backgrounds = [
+      (ctx) => {
+        let grd = ctx.createLinearGradient(0, 0, 0, 1080);
+        grd.addColorStop(0, "#ff9933");
+        grd.addColorStop(0.47, "#fff");
+        grd.addColorStop(0.55, "#fff");
+        grd.addColorStop(1, "#138808");
+        ctx.fillStyle = grd;
+        ctx.fillRect(0, 0, 1080, 1080);
+      },
+      (ctx) => {
+        ctx.fillStyle = "#26262c";
+        ctx.fillRect(0, 0, 1080, 1080);
+        ctx.strokeStyle = "#7fd081";
+        ctx.lineWidth = 16;
+        ctx.strokeRect(18, 18, 1044, 1044);
+      },
+      (ctx) => {
+        let g = ctx.createLinearGradient(0, 1080, 1080, 0);
+        g.addColorStop(0, "#ffde7d");
+        g.addColorStop(0.2, "#ff004e");
+        g.addColorStop(0.4, "#f08f68");
+        g.addColorStop(0.65, "#64e291");
+        g.addColorStop(0.81, "#20dbda");
+        g.addColorStop(1, "#f9f871");
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, 1080, 1080);
+      },
+      (ctx) => {
+        ctx.fillStyle = "#fdeff9";
+        ctx.fillRect(0, 0, 1080, 1080);
+        for (let i = 0; i < 23; i++) {
+          ctx.beginPath();
+          ctx.arc(Math.random() * 1080, Math.random() * 1080, Math.random() * 18 + 5, 0, 2 * Math.PI);
+          ctx.fillStyle = "rgba(255,240,90,0.16)";
+          ctx.fill();
+        }
+        ctx.font = "bolder 140px Fredoka One";
+        ctx.fillStyle = "#ffb30090";
+        ctx.fillText("✨", 380, 700);
+      },
+    ];
+    const quotes = [
+  "Be the change you wish to see in the world.",
+  "An eye for an eye will make the whole world blind.",
+  "The future depends on what you do today.",
+  "Live as if you were to die tomorrow. Learn as if you were to live forever.",
+  "Happiness is when what you think, what you say, and what you do are in harmony.",
+  "Strength does not come from physical capacity. It comes from an indomitable will.",
+  "Peace is its own reward.",
+  "The weak can never forgive. Forgiveness is the attribute of the strong.",
+  "The best way to find yourself is to lose yourself in the service of others.",
+  "Service without humility is selfishness and egotism.",
+  "You may never know what results come of your actions, but if you do nothing, there will be no result.",
+  "First they ignore you, then they laugh at you, then they fight you, then you win.",
+  "Freedom is not worth having if it does not include the freedom to make mistakes.",
+  "The greatness of humanity is not in being human, but in being humane.",
+  "You must not lose faith in humanity. Humanity is an ocean; if a few drops of the ocean are dirty, the ocean does not become dirty.",
+  "Earth provides enough to satisfy every man’s needs, but not every man’s greed.",
+  "Live simply so that others may simply live.",
+  "In a gentle way, you can shake the world.",
+  "Nonviolence is the greatest force at the disposal of mankind.",
+  "There is no path to peace. Peace is the path.",
+  "My life is my message.",
+  "Satisfaction lies in the effort, not in the attainment. Full effort is full victory.",
+  "The good man is the friend of all living things.",
+  "A man is but the product of his thoughts. What he thinks, he becomes.",
+  "To call woman the weaker sex is a libel; it is man’s injustice to woman.",
+  "The weak can never forgive. Forgiveness is the attribute of the strong.",
+  "Champions are made from something they have deep inside them—a desire, a dream, a vision.",
+  "Non-cooperation with evil is as much a duty as cooperation with good.",
+  "Glory lies in the attempt to reach one’s goal and not in reaching it.",
+  "Our greatness lies not so much in being able to remake the world as in being able to remake ourselves.",
+  "Man becomes great exactly in the degree in which he works for the welfare of his fellow men.",
+  "Truth never damages a cause that is just.",
+  "Faith is not something to grasp, it is a state to grow into.",
+  "Prayer is not asking. It is a longing of the soul.",
+  "Nobody can hurt me without my permission.",
+  "The difference between what we do and what we are capable of doing would suffice to solve most of the world’s problems.",
+  "Non-violence requires a double faith, faith in God and also faith in man.",
+  "Power is of two kinds. One is obtained by the fear of punishment and the other by acts of love.",
+  "You don’t know who is important to you until you actually lose them.",
+  "The essence of all religions is one. Only their approaches are different."
+];
+    let bgStyle = 0,
+      selectedQuote = "",
+      userPhoto = "";
+
+    function setStyle(i) {
+      bgStyle = i;
+      document.querySelectorAll(".bg-btn").forEach((btn, ix) => btn.classList.toggle("active", ix === i));
+      renderPreview();
+    }
+    function chooseQuote() {
+      selectedQuote = quotes[Math.floor(Math.random() * quotes.length)];
+      document.getElementById("quoteDisplay").innerText = selectedQuote;
+      renderPreview();
+    }
+    function uploadPhoto() {
+      let inp = document.createElement("input");
+      inp.type = "file";
+      inp.accept = "image/*";
+      inp.onchange = (e) => handlePhoto(e);
+      inp.click();
+    }
+    function takePhoto() {
+      let inp = document.createElement("input");
+      inp.type = "file";
+      inp.accept = "image/*";
+      inp.capture = "environment";
+      inp.onchange = (e) => handlePhoto(e);
+      inp.click();
+    }
+    function handlePhoto(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        userPhoto = e.target.result;
+        let img = document.getElementById("photoPreview");
+        img.src = userPhoto;
+        img.style.display = "block";
+        renderPreview();
+      };
+      reader.readAsDataURL(file);
+    }
+    function renderPreview() {
+      const area = document.getElementById("previewArea");
+      area.innerHTML = "";
+      let show = !!selectedQuote;
+      document.getElementById("downloadBtn").classList.toggle("hidden", !show);
+      if (!show) return;
+      let previewC = document.createElement("canvas");
+      previewC.width = 320;
+      previewC.height = 320;
+      let ctx = previewC.getContext("2d");
+      backgrounds[bgStyle](ctx);
+      drawSpeechBubble(ctx, 52, 110, 220, 120, 28, "#fff", "#eee");
+      ctx.font = "bold 19px 'Fredoka One', 'Baloo 2',cursive";
+      ctx.fillStyle = "#222";
+      wrapText(ctx, selectedQuote, 64, 152, 194, 27);
+
+      // Gandhi Jayanti vector bottom-left
+      let vec = new window.Image();
+      vec.src = "pngtree-happy-gandhi-jayanti-october-2-abstract-typography-png-image_3967709.jpg";
+      vec.onload = () => {
+        ctx.drawImage(vec, 10, 245, 75, 59);
+      };
+      // MGC logo bottom-right
+      let logo = new window.Image();
+      logo.src = "images.jpg";
+      logo.onload = () => {
+        ctx.drawImage(logo, 228, 258, 74, 46);
+      };
+      // Student polaroid
+      if (userPhoto) {
+        let photo = new window.Image();
+        photo.src = userPhoto;
+        photo.onload = () => {
+          ctx.save();
+          ctx.translate(142, 56);
+          ctx.rotate(-0.06);
+          ctx.fillStyle = "#fff";
+          ctx.strokeStyle = "#bbb";
+          ctx.fillRect(-38, -38, 76, 76);
+          ctx.strokeRect(-38, -38, 76, 76);
+          ctx.beginPath();
+          ctx.arc(0, 0, 34, 0, 2 * Math.PI);
+          ctx.closePath();
+          ctx.clip();
+          ctx.drawImage(photo, -34, -34, 68, 68);
+          ctx.restore();
+        };
+      }
+      area.appendChild(previewC);
+    }
+    function drawSpeechBubble(ctx, x, y, w, h, r, fill, border) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + w * 0.52, y + h);
+      ctx.lineTo(x + w * 0.35, y + h + 19);
+      ctx.lineTo(x + w * 0.36, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+      ctx.fillStyle = fill;
+      ctx.strokeStyle = border;
+      ctx.lineWidth = 2;
+      ctx.fill();
+      ctx.stroke();
+    }
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+      let words = text.split(" "),
+        line = "",
+        yy = y;
+      for (let n = 0; n < words.length; n++) {
+        let testLine = line + words[n] + " ";
+        if (ctx.measureText(testLine).width > maxWidth && n > 0) {
+          ctx.fillText(line, x, yy);
+          line = words[n] + " ";
+          yy += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+      ctx.fillText(line, x, yy);
+    }
+    function downloadCard() {
+      const canvas = document.getElementById("canvasExport");
+      const ctx = canvas.getContext("2d");
+
+      backgrounds[bgStyle](ctx);
+      drawSpeechBubble(ctx, 176, 380, 740, 415, 65, "#fff", "#f6f6f6");
+      ctx.font = "bold 70px 'Fredoka One', 'Baloo 2',cursive";
+      ctx.fillStyle = "#1d1d1d";
+      wrapText(ctx, selectedQuote, 210, 505, 700, 77);
+
+      let imagesToLoad = 2;
+      if (userPhoto) imagesToLoad++;
+
+      function checkAndFinalize() {
+        imagesToLoad--;
+        if (imagesToLoad <= 0) finalize();
+      }
+
+      // Gandhi vector bottom left
+      let vec = new Image();
+      vec.crossOrigin = "anonymous";
+      vec.src = "pngtree-happy-gandhi-jayanti-october-2-abstract-typography-png-image_3967709.jpg";
+      vec.onload = function () {
+        ctx.drawImage(vec, 45, 890, 235, 185);
+        checkAndFinalize();
+      };
+
+      // MGC logo bottom right
+      let logo = new Image();
+      logo.crossOrigin = "anonymous";
+      logo.src = "images.jpg";
+      logo.onload = function () {
+        ctx.drawImage(logo, 800, 955, 220, 95);
+        checkAndFinalize();
+      };
+
+      // Student photo (polaroid)
+      if (userPhoto) {
+        let photo = new Image();
+        photo.crossOrigin = "anonymous";
+        photo.src = userPhoto;
+        photo.onload = function () {
+          ctx.save();
+          ctx.translate(540, 235);
+          ctx.rotate(-0.07);
+          ctx.fillStyle = "#fff";
+          ctx.strokeStyle = "#d1d9de";
+          ctx.fillRect(-127, -127, 254, 254);
+          ctx.strokeRect(-127, -127, 254, 254);
+          ctx.beginPath();
+          ctx.arc(0, 0, 110, 0, 2 * Math.PI);
+          ctx.closePath();
+          ctx.clip();
+          ctx.drawImage(photo, -110, -110, 220, 220);
+          ctx.restore();
+          checkAndFinalize();
+        };
+      }
+
+      function finalize() {
+        ctx.save();
+        ctx.globalAlpha = 0.9;
+        ctx.fillStyle = "#138808";
+        ctx.fillRect(0, 995, 1080, 75);
+        ctx.globalAlpha = 1.0;
+        ctx.font = "48px 'Baloo 2',cursive";
+        ctx.fillStyle = "#fff";
+        ctx.fillText("Gandhi Jayanti • Oct 2 • MGC", 115, 1050);
+        ctx.restore();
+
+        let link = document.createElement("a");
+        link.download = "GandhiJayanti_Quote.png";
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+
+        document.getElementById("msg").innerText = "Downloaded! Share on Instagram & WhatsApp!";
+      }
+    }
+
+    setStyle(0);
+    renderPreview();
+  </script>
+</body>
+</html>
