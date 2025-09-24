@@ -38,58 +38,70 @@
   </div>
   <footer style="text-align:center;font-size:1rem;color:#444;margin:22px 0 12px 0;">For students • Gandhi Jayanti 2025 • MGC</footer>
   <canvas id="canvasExport" width="960" height="768" class="hidden"></canvas>
+  
   <script>
     const templateFile = "White-Orange-and-Green-Illustrated-Gandhi-Jayanti-Instagram-Post-1.jpg";
     const quotes = [
-  "Be the change you wish to see in the world.",
-  "An eye for an eye will make the whole world blind.",
-  "The future depends on what you do today.",
-  "Live as if you were to die tomorrow. Learn as if you were to live forever.",
-  "Happiness is when what you think, what you say, and what you do are in harmony.",
-  "Strength does not come from physical capacity. It comes from an indomitable will.",
-  "Peace is its own reward.",
-  "The weak can never forgive. Forgiveness is the attribute of the strong.",
-  "The best way to find yourself is to lose yourself in the service of others.",
-  "Service without humility is selfishness and egotism.",
-  "You may never know what results come of your actions, but if you do nothing, there will be no result.",
-  "First they ignore you, then they laugh at you, then they fight you, then you win.",
-  "Freedom is not worth having if it does not include the freedom to make mistakes.",
-  "The greatness of humanity is not in being human, but in being humane.",
-  "You must not lose faith in humanity. Humanity is an ocean; if a few drops of the ocean are dirty, the ocean does not become dirty.",
-  "Earth provides enough to satisfy every man’s needs, but not every man’s greed.",
-  "Live simply so that others may simply live.",
-  "In a gentle way, you can shake the world.",
-  "Nonviolence is the greatest force at the disposal of mankind.",
-  "There is no path to peace. Peace is the path.",
-  "My life is my message.",
-  "Satisfaction lies in the effort, not in the attainment. Full effort is full victory.",
-  "The good man is the friend of all living things.",
-  "A man is but the product of his thoughts. What he thinks, he becomes.",
-  "To call woman the weaker sex is a libel; it is man’s injustice to woman.",
-  "The weak can never forgive. Forgiveness is the attribute of the strong.",
-  "Champions are made from something they have deep inside them—a desire, a dream, a vision.",
-  "Non-cooperation with evil is as much a duty as cooperation with good.",
-  "Glory lies in the attempt to reach one’s goal and not in reaching it.",
-  "Our greatness lies not so much in being able to remake the world as in being able to remake ourselves.",
-  "Man becomes great exactly in the degree in which he works for the welfare of his fellow men.",
-  "Truth never damages a cause that is just.",
-  "Faith is not something to grasp, it is a state to grow into.",
-  "Prayer is not asking. It is a longing of the soul.",
-  "Nobody can hurt me without my permission.",
-  "The difference between what we do and what we are capable of doing would suffice to solve most of the world’s problems.",
-  "Non-violence requires a double faith, faith in God and also faith in man.",
-  "Power is of two kinds. One is obtained by the fear of punishment and the other by acts of love.",
-  "You don’t know who is important to you until you actually lose them.",
-  "The essence of all religions is one. Only their approaches are different."
-];
+      "Be the change you wish to see in the world.",
+      "An eye for an eye will make the whole world blind.",
+      "The future depends on what you do today.",
+      "Live as if you were to die tomorrow. Learn as if you were to live forever.",
+      "Happiness is when what you think, what you say, and what you do are in harmony.",
+      "Strength does not come from physical capacity. It comes from an indomitable will.",
+      "Peace is its own reward.",
+      "The weak can never forgive. Forgiveness is the attribute of the strong.",
+      "The best way to find yourself is to lose yourself in the service of others.",
+      "Service without humility is selfishness and egotism.",
+      "You may never know what results come of your actions, but if you do nothing, there will be no result.",
+      "First they ignore you, then they laugh at you, then they fight you, then you win.",
+      "Freedom is not worth having if it does not include the freedom to make mistakes.",
+      "The greatness of humanity is not in being human, but in being humane.",
+      "You must not lose faith in humanity. Humanity is an ocean; if a few drops of the ocean are dirty, the ocean does not become dirty.",
+      "Earth provides enough to satisfy every man’s needs, but not every man’s greed.",
+      "Live simply so that others may simply live.",
+      "In a gentle way, you can shake the world.",
+      "Nonviolence is the greatest force at the disposal of mankind.",
+      "There is no path to peace. Peace is the path.",
+      "My life is my message.",
+      "Satisfaction lies in the effort, not in the attainment. Full effort is full victory.",
+      "The good man is the friend of all living things.",
+      "A man is but the product of his thoughts. What he thinks, he becomes.",
+      "To call woman the weaker sex is a libel; it is man’s injustice to woman.",
+      "Champions are made from something they have deep inside them—a desire, a dream, a vision.",
+      "Non-cooperation with evil is as much a duty as cooperation with good.",
+      "Glory lies in the attempt to reach one’s goal and not in reaching it.",
+      "Our greatness lies not so much in being able to remake the world as in being able to remake ourselves.",
+      "Man becomes great exactly in the degree in which he works for the welfare of his fellow men.",
+      "Truth never damages a cause that is just.",
+      "Faith is not something to grasp, it is a state to grow into.",
+      "Prayer is not asking. It is a longing of the soul.",
+      "Nobody can hurt me without my permission.",
+      "The difference between what we do and what we are capable of doing would suffice to solve most of the world’s problems.",
+      "Non-violence requires a double faith, faith in God and also faith in man.",
+      "Power is of two kinds. One is obtained by the fear of punishment and the other by acts of love.",
+      "You don’t know who is important to you until you actually lose them.",
+      "The essence of all religions is one. Only their approaches are different."
+    ];
 
     let selectedQuote = "", userPhoto = "";
+
+    // Image loader helper
+    function loadImage(src) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+      });
+    }
 
     function chooseQuote() {
       selectedQuote = quotes[Math.floor(Math.random() * quotes.length)];
       document.getElementById("quoteDisplay").innerText = selectedQuote;
       renderPreview();
     }
+
     function uploadPhoto() {
       let inp = document.createElement("input");
       inp.type = "file";
@@ -97,6 +109,7 @@
       inp.onchange = (e) => handlePhoto(e);
       inp.click();
     }
+
     function takePhoto() {
       let inp = document.createElement("input");
       inp.type = "file";
@@ -105,6 +118,7 @@
       inp.onchange = (e) => handlePhoto(e);
       inp.click();
     }
+
     function handlePhoto(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -118,6 +132,8 @@
       };
       reader.readAsDataURL(file);
     }
+
+    // ==== FIXED PREVIEW ====
     function renderPreview() {
       const area = document.getElementById("previewArea");
       area.innerHTML = "";
@@ -127,42 +143,79 @@
 
       let previewC = document.createElement("canvas");
       previewC.width = 320;
-      previewC.height = 256; // aspect ratio for preview
+      previewC.height = 256;
       let ctx = previewC.getContext("2d");
 
-      // Template image
-      let bgImg = new window.Image();
-      bgImg.src = templateFile;
-      bgImg.onload = () => {
+      let promises = [loadImage(templateFile)];
+      if (userPhoto) promises.push(loadImage(userPhoto));
+
+      Promise.all(promises).then(images => {
+        const bgImg = images[0];
+        ctx.clearRect(0, 0, previewC.width, previewC.height);
         ctx.drawImage(bgImg, 0, 0, 320, 256);
 
-        // User photo: right top circle – coordinates (280,28), diameter 34px
-        if(userPhoto){
-          let photo = new window.Image();
-          photo.src = userPhoto;
-          photo.onload = ()=>{
-            ctx.save();
-            ctx.beginPath();
-            ctx.arc(280, 32, 19, 0, 2 * Math.PI);
-            ctx.closePath();
-            ctx.clip();
-            ctx.drawImage(photo, 261, 13, 38, 38);
-            ctx.restore();
-          }
+        if (userPhoto) {
+          const photo = images[1];
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(280, 32, 19, 0, 2 * Math.PI);
+          ctx.closePath();
+          ctx.clip();
+          ctx.drawImage(photo, 261, 13, 38, 38);
+          ctx.restore();
         }
 
-        // Quote in rectangle – approx coordinates (32,55), width 255, height 48
         ctx.save();
         ctx.font = "bold 15px Segoe UI";
         ctx.fillStyle = "#1e1e1e";
         wrapText(ctx, selectedQuote, 40, 78, 250, 18);
         ctx.restore();
-      };
+      });
 
       area.appendChild(previewC);
     }
 
-    // Helper for multiline quote box
+    // ==== FIXED DOWNLOAD ====
+    function downloadCard() {
+      const canvas = document.getElementById("canvasExport");
+      const ctx = canvas.getContext("2d");
+
+      let promises = [loadImage(templateFile)];
+      if (userPhoto) promises.push(loadImage(userPhoto));
+
+      Promise.all(promises).then(images => {
+        const bgImg = images[0];
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(bgImg, 0, 0, 960, 768);
+
+        if (userPhoto) {
+          const photo = images[1];
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(845, 98, 35, 0, 2 * Math.PI);
+          ctx.closePath();
+          ctx.clip();
+          ctx.drawImage(photo, 810, 63, 70, 70);
+          ctx.restore();
+        }
+
+        // ✅ Always draw quote
+        ctx.save();
+        ctx.font = "bold 30px Segoe UI";
+        ctx.fillStyle = "#222";
+        wrapText(ctx, selectedQuote, 170, 182, 620, 34);
+        ctx.restore();
+
+        // Download
+        let link = document.createElement("a");
+        link.download = "GandhiJayanti_Card.png";
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+        document.getElementById("msg").innerText = "Downloaded! Share on Instagram & WhatsApp!";
+      });
+    }
+
+    // Text wrapping helper
     function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
       const words = text.split(" ");
       let line = "", yy = y;
@@ -179,56 +232,7 @@
       ctx.fillText(line, x, yy);
     }
 
-    function downloadCard() {
-      const canvas = document.getElementById("canvasExport");
-      const ctx = canvas.getContext("2d");
-      // Render template background image
-      let bgImg = new Image();
-      bgImg.src = templateFile;
-      bgImg.onload = () => {
-        ctx.drawImage(bgImg, 0, 0, 960, 768);
-        let imagesToLoad = 1;
-        if(userPhoto) imagesToLoad++;
-        function checkAndFinalize() {
-          imagesToLoad--;
-          if(imagesToLoad <= 0) finalize();
-        }
-        // User photo, place in circle at (815,70), diameter 70px
-        if(userPhoto){
-          let photo = new Image();
-          photo.src = userPhoto;
-          photo.onload = () => {
-            ctx.save();
-            ctx.beginPath();
-            ctx.arc(845, 98, 35, 0, 2 * Math.PI);
-            ctx.closePath();
-            ctx.clip();
-            ctx.drawImage(photo, 810, 63, 70, 70);
-            ctx.restore();
-            checkAndFinalize();
-          };
-        }
-        else checkAndFinalize();
-
-        // Quote, placed in rectangle at (160,142), width 640, height 122
-        function finalize(){
-          ctx.save();
-          ctx.font = "bold 30px Segoe UI";
-          ctx.fillStyle = "#222";
-          wrapText(ctx, selectedQuote, 170, 182, 620, 34);
-          ctx.restore();
-          // Download
-          let link = document.createElement("a");
-          link.download = "GandhiJayanti_Card.png";
-          link.href = canvas.toDataURL("image/png");
-          link.click();
-          document.getElementById("msg").innerText = "Downloaded! Share on Instagram & WhatsApp!";
-        }
-      }
-    }
-
     renderPreview();
   </script>
 </body>
 </html>
-
